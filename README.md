@@ -28,7 +28,7 @@ Each section would be saved as the section header, such as
 The main procedure includes error checking for sections that delimiter searches may have missed and skipped in the split. If the number found in the header does not increment by .1 or .01 relatively, an error message will appear with the option to cancel the script and prints to the Debug Log for tracking.  
 For instance, splitting section *1.2*  then *1.4* would produce an error with this information for skipping *1.3*. Same for *1.21* to *1.23*. However, there would be no error splitting *1.34* and then *2.1*, since the parenting integer was incremented instead of the decimal. 
 
-#####*Skeleton of the Beef*
+#####*Bones of the Beef*
 ```VBA
 Set Section = ActiveDocument.Range.Duplicate
 With Section.Find                                   'Find sections that split the document.
