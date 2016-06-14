@@ -143,7 +143,8 @@ Sub FormatDocSplitter()
     Set Header = Section.Duplicate
 End Sub
 
-'Save a new file from range Section within the parent file with fileName from Range Header within Section
+'-------------------------------------------------------------------------------------
+'Save a new file from range Section in parent file with fileName from Range Header
 Private Static Sub CopyAndSave(Section As Range, Header As Range, maxFileName As Integer)
     Dim name As String
     Header.Select
@@ -166,18 +167,18 @@ Private Static Sub CopyAndSave(Section As Range, Header As Range, maxFileName As
     name = Replace(name, Chr(10), "")
     name = Replace(name, Chr(13), "")
     name = Replace(name, Chr(9), "")
-    name = Replace(name, "‘", "'")
-    name = Replace(name, "’", "'")
-    name = Replace(name, "“", "'")
-    name = Replace(name, "”", "'")
-    name = Replace(name, " ", "")
-    name = Replace(name, "®", "(R)")
-    name = Replace(name, "™", "(TM)")
-    name = Replace(name, "™", "(TM)")
-    name = Replace(name, "£", "(E)")
+    name = Replace(name, "Â‘", "'")
+    name = Replace(name, "Â’", "'")
+    name = Replace(name, "Â“", "'")
+    name = Replace(name, "Â”", "'")
+    name = Replace(name, "Â ", "")
+    name = Replace(name, "Â®", "(R)")
+    name = Replace(name, "Â™", "(TM)")
+    name = Replace(name, "Â™", "(TM)")
+    name = Replace(name, "Â£", "(E)")
     name = Replace(name, "", " ")
-    name = Replace(name, "–", "-")
-    name = Replace(name, "—", "-")
+    name = Replace(name, "Â–", "-")
+    name = Replace(name, "Â—", "-")
     name = Trim(name)
     name = StripAccent(name)
    
@@ -214,6 +215,7 @@ Private Static Sub CopyAndSave(Section As Range, Header As Range, maxFileName As
     D.Close
 End Sub
 
+'-------------------------------------------------------------------------------------
 'Remove all existing hyperlinks in a document.
 Private Static Sub RemoveAllHyperlinks()
     Dim oField As Field
@@ -225,6 +227,7 @@ Private Static Sub RemoveAllHyperlinks()
     Set oField = Nothing
 End Sub
 
+'-------------------------------------------------------------------------------------
 'Replace all unformatted URLs with a hyperlink to itself.
 Private Static Sub URLtoHyperlink()
   Dim f1 As Boolean, f2 As Boolean, f3 As Boolean
@@ -270,12 +273,13 @@ Private Static Sub URLtoHyperlink()
   End With
 End Sub
 
+'-------------------------------------------------------------------------------------
 'Replace accended chars with their plaintext alphabet counterparts
 Function StripAccent(aString As String)
     Dim A As String * 1
     Dim B As String * 1
     Dim i As Integer
-    Const AccChars = "ŠšŸÀÁÂÃÄÅÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖÙÚÛÜİàáâãäåçèéêëìíîïğñòóôõöùúûüıÿ"
+    Const AccChars = "ÂŠÂÂšÂÂŸÃ€ÃÃ‚ÃƒÃ„Ã…Ã‡ÃˆÃ‰ÃŠÃ‹ÃŒÃÃÃÃÃ‘Ã’Ã“Ã”Ã•Ã–Ã™ÃšÃ›ÃœÃÃ Ã¡Ã¢Ã£Ã¤Ã¥Ã§Ã¨Ã©ÃªÃ«Ã¬Ã­Ã®Ã¯Ã°Ã±Ã²Ã³Ã´ÃµÃ¶Ã¹ÃºÃ»Ã¼Ã½Ã¿"
     Const RegChars = "SZszYAAAAAACEEEEIIIIDNOOOOOUUUUYaaaaaaceeeeiiiidnooooouuuuyy"
     For i = 1 To Len(AccChars)
         A = Mid(AccChars, i, 1)
@@ -285,6 +289,7 @@ Function StripAccent(aString As String)
     StripAccent = aString
 End Function
 
+'-------------------------------------------------------------------------------------
 'Remove all shapes in the Active Document
 Function DeleteShapes()
     Dim Shp As Shape
