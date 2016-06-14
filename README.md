@@ -1,5 +1,5 @@
 # VBADocSplitter
-*VBA-Word script that splits a Word Doc into HTML files by provided delimiters. Performs autoformatting for a specific report template.*
+*VBA-Word script that splits a Word Doc into HTML files by provided delimiters. Performs autoformatting for a specific report template. This turned months of copy/pasting, saving, and uploading into a few days of automation.*
 
 
 ## Sub Procedures & Functions
