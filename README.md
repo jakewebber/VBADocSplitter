@@ -1,5 +1,21 @@
 # VBADocSplitter
 *VBA-Word script that splits a Word Doc into HTML files by provided delimiters. Performs autoformatting for a specific report template. This turned months of copy/pasting, saving, and uploading into a few days of automation.*
+## How To Run On Your Document
+Open Microsoft Visual Basic for Applications Editor from your Word Document by: 
+
+`View Tab --> Macros --> Create` **OR** press `ALT+F11` 
+![Word Macro](http://makeofficework.com/images/macros_button_record_macro.png "Open Microsoft VBA Editor")
+
+In the VBA Editor, import the `DocSplitter.bas` file  through `File -> Import File`
+![VBA Import](http://powerspreadsheets.com/wp-content/uploads/how-to-import-file-in-visual-basic-editor.jpg
+ "Open Microsoft VBA Editor")
+
+####OR
+
+View the raw [`DocSplitter.bas`](https://raw.githubusercontent.com/jakewebber/VBADocSplitter/master/DocSplitter.bas) file and copy/paste the code into the editor where needed. 
+
+Run the script through Microsoft Word's `View Tab --> Macros --> Run`
+
 
 
 ## Sub Procedures & Functions
@@ -15,7 +31,7 @@ The delimiters are found and replaced with whitespace characters (combination of
 
 -----
 #####Example template for this script:
-![Alt text](http://i.imgur.com/3EdFXog.png "Optional title")
+![Example](http://i.imgur.com/3EdFXog.png "Document Example Exerpt")
 
 -----
 For This Report, the `startDelimiter` would be **Return to Table of Contents** 
