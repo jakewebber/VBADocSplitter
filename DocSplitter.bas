@@ -1,5 +1,3 @@
-Attribute VB_Name = "FormatDocSplitter"
-
 Sub FormatDocSplitter()
     Dim Count As Long       'Total number of document split iterations
     Dim Section As Range    'Range for each Section in Doc
@@ -18,14 +16,34 @@ Sub FormatDocSplitter()
     ActiveDocument.Range.ParagraphFormat.SpaceAfter = 10
     
     startDelimiter = "Return To Table Of Contents"  '<- DEFINE: Start delimiter for document splitting
-    endDelimiter = "(\-{6,})"                       '<- DEFINE: End delimiter for document splitting
-    endDelimiter2 = "(_{6,})"                       '<- DEFINE: Another end delimiter for document splitting
-    maxFileName = 180                               '<- DEFINE: Sections with larger names will be truncated to this size and have " ..." appended.
+    endDelimiter = "(-{5,})"                        '<- DEFINE: End delimiter for document splitting
+    endDelimiter2 = "(_{5,})"                       '<- DEFINE: Another end delimiter for document splitting
+    maxFileName = 160                               '<- DEFINE: Sections with larger names will be truncated to this size and have " ..." appended.
      
     Call RemoveAllHyperlinks 'Hyperlinks will not work as delimiters
     Call DeleteShapes 'Remove unnecessary line shapes from document (unnecessary convert to png for html)
     
     'Reformatting Delimiters to remove them from documents...
+    With ActiveDocument.Content.Find 'Remove Glossary/Content Index
+        .ClearFormatting
+        .MatchCase = True
+        .MatchWildcards = True
+        .Text = "CONTENTS*FOUNTAIN AGRICOUNSEL LLC WEEKLY INDUSTRY NEWS REPORT"
+        .Replacement.ClearFormatting
+        .Replacement.Text = ""
+        .Execute Replace:=wdReplaceOne, Forward:=True, _
+        Wrap:=wdFindContinue
+    End With
+      With ActiveDocument.Content.Find 'Add startDelimiter to first section
+        .ClearFormatting
+        .MatchCase = True
+        .MatchWildcards = True
+        .Text = "[^l^13]1.0*[^l^13]"
+        .Replacement.ClearFormatting
+        .Replacement.Text = startDelimiter & "^13"
+        .Execute Replace:=wdReplaceOne, Forward:=True, _
+        Wrap:=wdFindContinue
+    End With
     With ActiveDocument.Content.Find 'Replace StartDelimiter with whitespace code
         .ClearFormatting
         .MatchCase = False
@@ -92,24 +110,24 @@ Sub FormatDocSplitter()
                             Left(HeaderNum.Text, InStr(HeaderNum.Text, ".")) _
                             = Left(CStr(numTrack), InStr(CStr(numTrack), ".")) Then '<- Checks that previous header is not a new Integer
                                 If Len(HeaderNum.Text) = 3 And CDbl(HeaderNum.Text) - numTrack > 0.11 Then
-                                    msgBoxResult = MsgBox("SPLIT ERROR: (.1) may have occurred between " & _
+                                   ' msgBoxResult = MsgBox("SPLIT ERROR: (.1) may have occurred between " & _
                                     numTrack & " and " & HeaderNum.Text & _
                                     " Check that this section was copied.", vbOKCancel, originalDocName & " - No Header Error")
-                                    Select Case msgBoxResult
-                                        Case vbCancel
-                                            Debug.Print "ERROR CANCELLED: Ended on " & originalDocName
-                                            Exit Sub
-                                    End Select
+                                    'Select Case msgBoxResult
+                                     '   Case vbCancel
+                                      '      Debug.Print "ERROR CANCELLED: Ended on " & originalDocName
+                                       '     Exit Sub
+                                    'End Select
                                     Debug.Print "SPLIT ERROR in " & ActiveDocument.name & " between (" & numTrack & " - " & HeaderNum.Text & ") "
                                 ElseIf Len(HeaderNum.Text) = 4 And CDbl(HeaderNum.Text) - numTrack > 0.011 Then
-                                    msgBoxResult = MsgBox("SPLIT ERROR: (.01) may have occurred between " & _
-                                    numTrack & " and " & HeaderNum.Text & _
+                                   ' msgBoxResult = MsgBox("SPLIT ERROR: (.01) may have occurred between " & _
+                                    'numTrack & " and " & HeaderNum.Text & _
                                     " Check that this section was copied.", vbOKCancel, originalDocName & "No Header Error")
-                                    Select Case msgBoxResult
-                                        Case vbCancel
-                                            Debug.Print "ERROR CANCELLED: Ended on " & originalDocName
-                                            Exit Sub
-                                    End Select
+                                    'Select Case msgBoxResult
+                                     '   Case vbCancel
+                                      '      Debug.Print "ERROR CANCELLED: Ended on " & originalDocName
+                                       '     Exit Sub
+                                    'End Select
                                     Debug.Print "SPLIT ERROR in " & ActiveDocument.name & " between (" & numTrack & " - " & HeaderNum.Text & ")"
                                 End If
                             End If
@@ -121,14 +139,14 @@ Sub FormatDocSplitter()
                     Call CopyAndSave(Section, Header, maxFileName) '<- Subroutine for saving section as doc
                     Count = Count + 1
                 Else
-                    msgBoxResult = MsgBox("ERROR: Could not find header for section " & Count & _
+                    'msgBoxResult = MsgBox("ERROR: Could not find header for section " & Count & _
                     ". Section text: " & Section.Text, vbOKCancel, "No Header Error")
-                    Select Case msgBoxResult
-                        Case vbCancel
-                            Debug.Print "ERROR CANCELLED"
-                            Exit Sub
-                    End Select
-                    
+                    'Select Case msgBoxResult
+                    '    Case vbCancel
+                    '        Debug.Print "ERROR CANCELLED"
+                    '        Exit Sub
+                   'End Select
+                    Debug.Print "Error: Coult not find header for section " & Count & " - " & originalDocName
                 End If
             End With
             Header.Collapse wdCollapseEnd
@@ -136,15 +154,14 @@ Sub FormatDocSplitter()
         Wend
     End With
     
-    MsgBox "Finished splitting " & originalDocName & " into " & Count & " pieces."
-    Debug.Print "!FINISH: " & originalDocName & " into " & Count & " pieces." & vbCr & vbCr
+    'MsgBox "Finished splitting " & originalDocName & " into " & Count & " pieces."
+    Debug.Print "!FINISH: " & originalDocName & " into " & Count & " pieces." '& vbCr & vbCr
     Section.Collapse wdCollapseEnd
-    Section.End = Section.Parent.Range.sEnd
+    Section.End = Section.Parent.Range.End
     Set Header = Section.Duplicate
 End Sub
 
-'-------------------------------------------------------------------------------------
-'Save a new file from range Section in parent file with fileName from Range Header
+'Save a new file from range Section within the parent file with fileName from Range Header within Section
 Private Static Sub CopyAndSave(Section As Range, Header As Range, maxFileName As Integer)
     Dim name As String
     Header.Select
@@ -153,7 +170,7 @@ Private Static Sub CopyAndSave(Section As Range, Header As Range, maxFileName As
    
     'File name cannot contain \ / : * ? " < > |
     name = Replace(Header.Text, Chr(13), "")
-    name = Trim(name)
+    name = Application.CleanString(name)
     name = Replace(name, "\", "-")
     name = Replace(name, "/", "-")
     name = Replace(name, ":", "-")
@@ -167,20 +184,21 @@ Private Static Sub CopyAndSave(Section As Range, Header As Range, maxFileName As
     name = Replace(name, Chr(10), "")
     name = Replace(name, Chr(13), "")
     name = Replace(name, Chr(9), "")
-    name = Replace(name, "", "'")
-    name = Replace(name, "", "'")
-    name = Replace(name, "", "'")
-    name = Replace(name, "", "'")
+    name = Replace(name, "‘", "'")
+    name = Replace(name, "’", "'")
+    name = Replace(name, "“", "'")
+    name = Replace(name, "”", "'")
     name = Replace(name, " ", "")
     name = Replace(name, "®", "(R)")
-    name = Replace(name, "", "(TM)")
-    name = Replace(name, "", "(TM)")
+    name = Replace(name, "™", "(TM)")
+    name = Replace(name, "™", "(TM)")
     name = Replace(name, "£", "(E)")
     name = Replace(name, "", " ")
-    name = Replace(name, "", "-")
-    name = Replace(name, "", "-")
+    name = Replace(name, "–", "-")
+    name = Replace(name, "—", "-")
     name = Trim(name)
     name = StripAccent(name)
+    'Debug.Print name
    
     'Reformatting Header
     Header.Select
@@ -191,7 +209,7 @@ Private Static Sub CopyAndSave(Section As Range, Header As Range, maxFileName As
     If (Len(name) > maxFileName) Then
         name = Left(name, maxFileName) & " ..."
     End If
-    Debug.Print "Saving: " & name
+    'Debug.Print "Saving: " & name
     
     Header.Copy
     Section.Copy
@@ -215,7 +233,6 @@ Private Static Sub CopyAndSave(Section As Range, Header As Range, maxFileName As
     D.Close
 End Sub
 
-'-------------------------------------------------------------------------------------
 'Remove all existing hyperlinks in a document.
 Private Static Sub RemoveAllHyperlinks()
     Dim oField As Field
@@ -227,7 +244,6 @@ Private Static Sub RemoveAllHyperlinks()
     Set oField = Nothing
 End Sub
 
-'-------------------------------------------------------------------------------------
 'Replace all unformatted URLs with a hyperlink to itself.
 Private Static Sub URLtoHyperlink()
   Dim f1 As Boolean, f2 As Boolean, f3 As Boolean
@@ -273,13 +289,12 @@ Private Static Sub URLtoHyperlink()
   End With
 End Sub
 
-'-------------------------------------------------------------------------------------
 'Replace accended chars with their plaintext alphabet counterparts
 Function StripAccent(aString As String)
     Dim A As String * 1
     Dim B As String * 1
     Dim i As Integer
-    Const AccChars = "ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖÙÚÛÜÝàáâãäåçèéêëìíîïðñòóôõöùúûüýÿ"
+    Const AccChars = "ŠŽšžŸÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖÙÚÛÜÝàáâãäåçèéêëìíîïðñòóôõöùúûüýÿ"
     Const RegChars = "SZszYAAAAAACEEEEIIIIDNOOOOOUUUUYaaaaaaceeeeiiiidnooooouuuuyy"
     For i = 1 To Len(AccChars)
         A = Mid(AccChars, i, 1)
@@ -289,11 +304,14 @@ Function StripAccent(aString As String)
     StripAccent = aString
 End Function
 
-'-------------------------------------------------------------------------------------
 'Remove all shapes in the Active Document
 Function DeleteShapes()
-    Dim Shp As Shape
-    For Each Shp In ActiveDocument.Shapes
-        Shp.Delete
-    Next Shp
+    Dim i As Long
+    With ActiveDocument
+    For i = .Shapes.Count To 1 Step -1
+        With .Shapes(i)
+            If .Type = msoAutoShape Then .Delete
+        End With
+    Next i
+End With
 End Function
