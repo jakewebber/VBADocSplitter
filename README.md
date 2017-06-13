@@ -10,7 +10,8 @@ In the VBA Editor, import the `DocSplitter.bas` file  through `File -> Import Fi
 ![VBA Import](http://powerspreadsheets.com/wp-content/uploads/how-to-import-file-in-visual-basic-editor.jpg
  "Open Microsoft VBA Editor")
 
-####OR
+
+#### OR
 
 View the raw [`DocSplitter.bas`](https://raw.githubusercontent.com/jakewebber/VBADocSplitter/master/DocSplitter.bas) file and copy/paste the code into the editor where needed. 
 
@@ -19,7 +20,7 @@ Run the script through Microsoft Word's `View Tab --> Macros --> Run`
 
 
 ## Sub Procedures & Functions
-####FormatDocSplitter()
+#### FormatDocSplitter()
 Main procedure for the script. Runs all other functions required for formatting the document properly both for splitting and HTML conversion. Edit these procedure variables below to fit your document and remove any function calls that perform unneeded autoformatting.
 ``` VBA
 startDelimiter = "start"  'Start delimiter for document splitting
@@ -30,7 +31,7 @@ The delimiters are found and replaced with whitespace characters (combination of
 
 
 -----
-#####Example template for this script:
+##### Example template for this script:
 ![Example](http://i.imgur.com/3EdFXog.png "Document Example Exerpt")
 
 -----
@@ -44,7 +45,7 @@ Each section would be saved as the section header, such as
 The main procedure includes error checking for sections that delimiter searches may have missed and skipped in the split. If the number found in the header does not increment by .1 or .01 relatively, an error message will appear with the option to cancel the script and prints to the Debug Log for tracking.  
 For instance, splitting section *1.2*  then *1.4* would produce an error with this information for skipping *1.3*. Same for *1.21* to *1.23*. However, there would be no error splitting *1.34* and then *2.1*, since the parenting integer was incremented instead of the decimal. 
 
-#####*Bones of the Beef*
+##### *Bones of the Beef*
 ```VBA
 Set Section = ActiveDocument.Range.Duplicate
 With Section.Find                                   'Find sections that split the document.
@@ -70,7 +71,7 @@ End With
 ```
 
 
-####CopyAndSave(Section As Range, Header As Range, maxFileName As Integer)
+#### CopyAndSave(Section As Range, Header As Range, maxFileName As Integer)
 Called in `FormatDocSplitter()` for saving each section from the original document and and additional formatting for each section. 
 
 `Section` range covers from current `startDelimiter` to `endDelimiter`. 
@@ -83,14 +84,14 @@ This procedure also cleans up the file name from header: a large number of chara
 
 Files are saved as simple HTM, or `wdFormatFilteredHTML`
 
-####RemoveAllHyperlinks()
+#### RemoveAllHyperlinks()
 Strips all hyperlinks from a document, preserving original linked text. This simplifies delimiter searching if the delimiters contain hyperlinks. 
 
-####URLtoHyperlink()
+#### URLtoHyperlink()
 Restores hyperlinks that are plain URLs. Also helps with formatting reports where many URLs were not initially hyperlinked. 
 
-####StripAccent(aString As String)
+#### StripAccent(aString As String)
 Strips all accent characters from the given `aString` and replaces them with plaintext alphabet chars. 
 
-####DeleteShapes()
+#### DeleteShapes()
 Removes Word shapes from the document. Word's bad HTML conversion will preserve shapes in documents as linked images in HTML. Use this if your document uses line shapes as visual separators. 
